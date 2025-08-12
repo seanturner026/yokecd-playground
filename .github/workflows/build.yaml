@@ -14,3 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.6"
+      - name: Install YokeCD
+        run: |
+          curl -L -o - 'https://github.com/yokecd/yoke/releases/download/latest/yoke_latest_darwin_arm64.gz' | gunzip  > /usr/local/bin/yoke && \
+          chmod +x /usr/local/bin/yoke
+      - name: Build and push WASM binary
+        run: |
+          GOOS=wasip1 GOARCH=wasm go build -o .wasm/foo/production/app.wasm ./apps/foo/production/main.go
+          yoke stow .wasm/foo/production/app.wasm oci://ghcr.io/seanturner026/yokecd-playground:latest
