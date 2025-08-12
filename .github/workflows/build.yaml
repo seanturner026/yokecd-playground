@@ -32,7 +32,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: GHA
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push WASM binary
         run: |
