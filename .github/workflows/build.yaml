@@ -28,8 +28,13 @@ jobs:
         run: |
           curl -L -o - "https://github.com/yokecd/yoke/releases/download/v0.16.5/yoke_v0.16.5_linux_amd64.gz" | gunzip  > /usr/local/bin/yoke && \
           chmod +x /usr/local/bin/yoke
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: GHA
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push WASM binary
         run: |
           GOOS=wasip1 GOARCH=wasm go build -o .wasm/foo/production/app.wasm ./apps/foo/production/main.go
-          echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
           yoke stow .wasm/foo/production/app.wasm oci://ghcr.io/seanturner026/yokecd-playground:latest
